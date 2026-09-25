@@ -7,7 +7,7 @@ that `diff` against the upstream tree stays meaningful and drift is detectable.
 | field | value |
 |---|---|
 | source | `HERMES/ergasterion/organon/` |
-| upstream repo | https://github.com/branzanic/HERMES |
+| upstream repo | HERMES (not yet public; vendored here for that reason) |
 | commit | `bef0247` |
 | copied | 2026-09-25 |
 

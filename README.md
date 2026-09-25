@@ -84,13 +84,15 @@ regenerates the outputs from scratch.
 
 ## What is in `nao/`
 
-Four modules copied unmodified from [HERMES](https://github.com/branzanic/HERMES),
-which builds the orthonormal, atom-resolved natural atomic orbital basis that
+Four modules copied unmodified from HERMES, which builds the orthonormal,
+atom-resolved natural atomic orbital basis that
 `G_rs` between two *atoms* requires — a raw atomic-orbital expansion will not do,
 because the per-atom coefficients are then basis-set dependent and not separable.
 
 They are a mirror, not Kallen's code: do not edit them here. `nao/PROVENANCE.md`
-records the upstream commit and how to check for drift. Their filenames mention
+records the upstream commit and how to check for drift. HERMES itself is not yet
+public — that is precisely why these modules are vendored, so that Kallen runs
+without it. Their filenames mention
 Turbomole and ORCA for historical reasons only — Kallen reads Molcas/OpenMolcas.
 
 ## Licence
