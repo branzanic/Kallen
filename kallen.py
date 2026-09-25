@@ -42,8 +42,8 @@ Usage
                      --output PROJ.log \\
                      --pairs 1,2
 
-Requires HERMES for the NAO construction (github.com/branzanic/HERMES); set
-HERMES_ROOT or place it beside this file.
+The NAO construction ships in nao/, so this runs standalone; numpy is the only
+requirement. Set HERMES_ROOT to override it with a HERMES checkout.
 """
 from __future__ import annotations
 
