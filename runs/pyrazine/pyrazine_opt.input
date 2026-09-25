@@ -1,0 +1,26 @@
+*=======================================================================
+* pyrazine -- ground-state geometry optimisation
+*
+* The Kallen worked examples start from ETKDGv3/MMFF94 structures, which
+* are not publishable geometries.  Reoptimised here at B3LYP/cc-pVDZ in
+* C1, which is the convention stated in the contribution.  C1 is kept
+* throughout: the production Dyson deck needs a fixed desymmetrised AO
+* ordering, so optimising in C2v and running in C1 would renumber atoms
+* between the two jobs.
+*=======================================================================
+&GATEWAY
+  coord = pyrazine_start.xyz
+  basis = cc-pVDZ
+  group = c1
+
+>>> EXPORT MOLCAS_MAXITER=60
+>>> DO WHILE
+
+&SEWARD
+
+&SCF
+  KSDFT = B3LYP
+
+&SLAPAF
+
+>>> END DO

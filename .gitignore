@@ -1,0 +1,55 @@
+__pycache__/
+*.pyc
+*.egg-info/
+
+# The manuscript is deliberately NOT tracked in this repository. Anything
+# committed here stays in the history, so a draft committed while the repo is
+# private would still be published the moment it is made public. Paper/ carries
+# its own git repository instead (see Paper/.git), which stays private.
+Paper/
+
+# OpenMolcas run products that are large and regenerable. The files Kallen
+# actually consumes -- <mol>_neutral.rasscf.molden, <mol>_dyson.dys.molden.SF.1,
+# <mol>_dyson.scf.molden and <mol>_dyson.log -- are NOT matched here: they are
+# committed on purpose, so the published numbers can be reproduced from a clone.
+runs/*/scratch_*/
+*.status
+*.xml
+*.h5
+*.GssOrb
+*.RasOrb*
+*.SpdOrb*
+*.JobIph*
+*.rasscf.molden.[0-9]*
+*.guessorb.molden
+*.DysOrb*
+*.err
+*.geo.molden
+*.structure
+tmp/
+
+# Exploratory work that is not part of the contribution: the PySCF/ADC(3)
+# comparison is a different methodology and a different paper.
+runs/adc/
+runs/adc_compare.py
+runs/compare_cas_adc.py
+runs/RESULTS.md
+
+# Per-molecule intermediates. Only the four files Kallen consumes are committed,
+# plus the decks and geometries needed to regenerate everything else:
+#   <mol>_opt.input, <mol>_opt.Opt.xyz, <mol>_start.xyz
+#   <mol>_dyson.input
+#   <mol>_neutral.rasscf.molden      the NAO reference
+#   <mol>_dyson.dys.molden.SF.1      the Dyson orbitals
+#   <mol>_dyson.scf.molden           the orbital-sum reference
+#   <mol>_dyson.log                  the poles
+*_opt.scf.molden
+*_opt.ScfOrb
+*_dyson.ScfOrb
+*_dyson.rasscf.molden
+xmldump
+
+# The CAS(14,12) run is an active-space test, not part of the contribution.
+runs/*/*cas14*
+*_adc3.npz
+*_opt.log

@@ -1,0 +1,16 @@
+&GATEWAY
+ coord=o2.xyz
+ basis=def2-SVP
+ group=c1
+&SEWARD
+&RASSCF
+ Title=SVP anion
+ Spin=2
+ Charge=-1
+ nActEl=13 0 0
+ Inactive=2
+ Ras2=8
+ CIRoot=1 1 1
+&CASPT2
+ Multistate=1 1
+ Imaginary=0.1

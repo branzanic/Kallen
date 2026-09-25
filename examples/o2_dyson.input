@@ -1,0 +1,122 @@
+*=======================================================================
+* O2 Dyson orbitals for HERMES  —  Stage 1 of Paper/CASSCF/PLAN.md
+*
+* Produces the exact Kallen-Lehmann ingredients for
+*     G_rs = SUM_n  d_r^n d_s^n / (E_F - IP_n)
+* namely the Dyson orbitals (weights) and the exact IPs (poles), for the
+* single O-O pair.
+*
+* O2 is the minimal multireference test: X 3Sigma_g- with two singly
+* occupied degenerate pi* orbitals.  It is the small-molecule analogue of
+* the near-degenerate beta frontier that made final_O2_doublet cost 32 h
+* of QC-SCF (beta gap 0.000 +/- 0.005 Ha over all 105 samples).
+*
+* Active space CAS(12,8): 16 electrons total, 4 in the two O 1s core
+* orbitals (Inactive=2), leaving 12 valence electrons in the 8 valence
+* orbitals 2sig_g 2sig_u 3sig_g 1pi_u(x2) 1pi_g(x2) 3sig_u.
+*
+* group=c1 is REQUIRED, not cosmetic: HERMES needs a fixed, desymmetrised
+* AO ordering, and the paper's benzene reference is likewise run in C1.
+*
+* JOB001 MUST be the neutral.  RASSI's Dyson loop runs JSTATE=1..DYSEXPSF
+* over initial states and ISTATE=JSTATE+1..NSTATE over final states
+* (src/rassi/writedys.f), so the N-electron state has to come first.
+*=======================================================================
+
+&GATEWAY
+  coord  = o2.xyz
+  basis  = def2-SVP
+  group  = c1
+
+&SEWARD
+
+*----------------------------------------------------------------------
+* N-electron reference:  O2 neutral,  X 3Sigma_g-
+*----------------------------------------------------------------------
+&RASSCF
+  Title    = O2 neutral triplet CAS(12,8)
+  Spin     = 3
+  Charge   = 0
+  nActEl   = 12 0 0
+  Inactive = 2
+  Ras2     = 8
+  CIRoot   = 1 1 1
+
+* Natural orbitals of the N-electron reference define the NAO basis.
+* NOTE their occupations are FRACTIONAL — see PLAN.md section 5.1.
+>>COPY $Project.rasscf.molden  o2_neutral.rasscf.molden
+>>COPY $Project.JobIph         JOB001
+
+&CASPT2
+  Title      = CASPT2 on the neutral reference
+  Multistate = 1 1
+  Imaginary  = 0.1
+
+*----------------------------------------------------------------------
+* (N-1)-electron final states:  O2+ doublets  (X 2Pi_g and above)
+* Six roots give six poles.  The pole count is the summation-window
+* problem of sec:benzene_window in another guise — argue it by
+* convergence, not assertion.
+*----------------------------------------------------------------------
+&RASSCF
+  Title    = O2+ doublet CAS(11,8), 6 roots
+  Spin     = 2
+  Charge   = 1
+  nActEl   = 11 0 0
+  Inactive = 2
+  Ras2     = 8
+  CIRoot   = 6 6 1
+
+>>COPY $Project.JobIph  JOB002
+
+&CASPT2
+  Title      = MS-CASPT2 on the cation doublets
+  Multistate = 6 1 2 3 4 5 6
+  Imaginary  = 0.1
+
+*----------------------------------------------------------------------
+* (N-1)-electron final states:  O2+ quartets
+* Removing one electron from a triplet reaches both doublet and quartet
+* cations; omitting the quartets would truncate the pole spectrum on a
+* spin selection rule rather than on convergence.
+*----------------------------------------------------------------------
+&RASSCF
+  Title    = O2+ quartet CAS(11,8), 4 roots
+  Spin     = 4
+  Charge   = 1
+  nActEl   = 11 0 0
+  Inactive = 2
+  Ras2     = 8
+  CIRoot   = 4 4 1
+
+>>COPY $Project.JobIph  JOB003
+
+&CASPT2
+  Title      = MS-CASPT2 on the cation quartets
+  Multistate = 4 1 2 3 4
+  Imaginary  = 0.1
+
+*----------------------------------------------------------------------
+* Dyson orbitals and amplitudes.
+*
+* DYSExport = 1 0  ->  export for the first spin-free initial state (the
+* neutral) and no spin-orbit states.  Writes Dyson.SF.molden.1 as a
+* standard Molden file: [ATOMS], [GTO], [5D], [MO] with Ene=/Occup=.
+*
+* Reading that file: the coefficients are the UN-NORMALISED Dyson
+* orbitals whose squared norm IS the pole strength
+* (src/rassi/mkdysorb.f:117, DYSAMP = SQRT(sum OVLP^2)).  Do not
+* normalise them on read — that silently deletes the spectral weights.
+*
+* Do NOT take the poles from the Molden Ene= field: molden_dysorb.f:814
+* writes it as F10.4, truncating at 1e-4 Ha.  Take the state energies
+* from this output at full precision and difference them.
+*----------------------------------------------------------------------
+&RASSI
+  NrOfJobIphs = 3  1 6 4
+  1
+  1 2 3 4 5 6
+  1 2 3 4
+  DYSOn
+  DYSExport
+  1 0

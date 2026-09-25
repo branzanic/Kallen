@@ -1,0 +1,106 @@
+*=======================================================================
+* thiophene -- Kallen-Lehmann ingredients for the OpenMolcas 2027 contribution
+*
+* Produces, for a single molecule and in one job:
+*   - Dyson orbitals d^n  (RASSI DYSOn)   -> the spectral WEIGHTS
+*   - MS-CASPT2 state energies            -> the exact POLES  IP_n
+* which is everything  G_rs(E_F) = SUM_n d_r^n d_s^n / (E_F - IP_n)
+* needs.  Kallen reads them out of the standard Molden export.
+*
+* Geometry: B3LYP/cc-pVDZ minimum (see thiophene_opt.input), planar, C2v in
+* fact but run in C1 on purpose -- the NAO construction needs a fixed
+* desymmetrised AO ordering, and atom indices must not be renumbered
+* between the optimisation and this job.
+*
+* Active space: the ten frontier orbitals -- five highest occupied and
+* five lowest virtual by RHF energy -- i.e. CAS(10,10) for the neutral
+* and CAS(9,10) for the cation, on the same orbitals.
+* The five highest occupied span the 1a2/2b1 pi pair, the S lone pair 11a1 and the C-S sigma manifold, which is what the 12.5 eV breakdown band needs.
+*
+* JOB001 MUST be the neutral: RASSI's Dyson loop runs JSTATE=1..DYSEXPSF
+* over initial states and ISTATE=JSTATE+1..NSTATE over final states
+* (src/rassi/writedys.f), so the N-electron state has to come first.
+*=======================================================================
+
+&GATEWAY
+  coord = thiophene_opt.Opt.xyz
+  basis = cc-pVDZ
+  group = c1
+
+&SEWARD
+
+* Closed-shell RHF: fixes the energy ordering the active space is cut from.
+&SCF
+
+*----------------------------------------------------------------------
+* N-electron reference: neutral singlet, CAS(10,10)
+*----------------------------------------------------------------------
+&RASSCF
+  Title    = thiophene neutral CAS(10,10)
+  Spin     = 1
+  Charge   = 0
+  nActEl   = 10 0 0
+  Inactive = 17
+  Ras2     = 10
+  CIRoot   = 1 1 1
+
+* Natural orbitals of the N-electron reference define the NAO basis.
+* Their occupations are FRACTIONAL -- the density must be occupation-
+* weighted, not cut at occ >= 1.
+>>COPY $Project.rasscf.molden  thiophene_neutral.rasscf.molden
+>>COPY $Project.JobIph         JOB001
+
+&CASPT2
+  Title      = CASPT2 on the neutral reference
+  Multistate = 1 1
+  Imaginary  = 0.1
+
+*----------------------------------------------------------------------
+* XMULtistate, not MULtistate.  The cation manifold here is strongly
+* mixed -- in thiophene that mixing IS the pole-strength collapse the
+* example exists to measure, and in pyrazine it is the contested
+* ordering of the lone-pair and pi states.  Ordinary MS-CASPT2 is not
+* invariant to rotations within a state-averaged space, so inside a
+* near-degenerate manifold its answer depends on the CASSCF root basis
+* it happened to be handed.  XMS diagonalises H0 within that space
+* first and removes the dependence.  Both molecules use it, for
+* comparability.  (MS-CASPT2 also runs to completion here -- XMS is
+* chosen on the physics, not to work around a failure.)
+* Poles are therefore read with --poles mscaspt2 (the reader's
+* 'X?MS-CASPT2 Root' pattern); the neutral contributes its MS row.
+* (N-1)-electron final states: cation doublets, 10 roots -> 10 poles
+*----------------------------------------------------------------------
+&RASSCF
+  Title    = thiophene cation CAS(9,10), 10 roots
+  Spin     = 2
+  Charge   = 1
+  nActEl   = 9 0 0
+  Inactive = 17
+  Ras2     = 10
+  CIRoot   = 10 10 1
+
+>>COPY $Project.JobIph  JOB002
+
+&CASPT2
+  Title      = XMS-CASPT2 on the cation doublets
+  XMultistate = 10 1 2 3 4 5 6 7 8 9 10
+  Imaginary  = 0.1
+
+*----------------------------------------------------------------------
+* Dyson orbitals and amplitudes.
+*
+* The Molden coefficients are the UN-NORMALISED Dyson orbitals; their
+* squared norm IS the pole strength (src/rassi/mkdysorb.f:117).  Do not
+* normalise on read -- that silently deletes the spectral weights.
+*
+* Do NOT take the poles from the Molden Ene= field: molden_dysorb.f:814
+* writes F10.4, truncating at 1e-4 Ha.  Difference the MS-CASPT2 state
+* energies in this output instead, at full precision.
+*----------------------------------------------------------------------
+&RASSI
+  NrOfJobIphs = 2  1 10
+  1
+  1 2 3 4 5 6 7 8 9 10
+  DYSOn
+  DYSExport
+  1 0

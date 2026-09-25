@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kallen Lesson 1: From Källén–Lehmann to the Pole Strength</title>
+<script>
+  MathJax = {
+    tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']],
+           tags: 'ams', processEnvironments: true },
+    svg: { fontCache: 'global' },
+    startup: {
+      ready: () => {
+        MathJax.startup.defaultReady();
+        document.querySelectorAll('mjx-container svg').forEach(s => s.style.color = '#e6edf3');
+      }
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --warn: #d29922;
+    --red: #f85149;
+    --code-bg: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .lesson-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .lesson-header .series {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .lesson-header h1 {
+    font-size: 2rem;
+    margin: 0.3rem 0 0.5rem;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .lesson-header .subtitle {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  h3 {
+    font-size: 1.15rem;
+    margin: 1.8rem 0 0.6rem;
+    color: var(--accent);
+  }
+  h4 {
+    font-size: 1rem;
+    margin: 1.2rem 0 0.4rem;
+    color: var(--accent3);
+  }
+
+  p { margin: 0.6rem 0; }
+
+  .concept-box, .example-box, .warning-box, .key-box, .derivation-box {
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+    border-left: 4px solid;
+  }
+  .concept-box { background: #161b22; border-color: var(--accent); }
+  .example-box { background: #0d2818; border-color: var(--accent2); }
+  .warning-box { background: #2a1f00; border-color: var(--warn); }
+  .key-box { background: #1a0d2e; border-color: var(--accent3); }
+  .derivation-box { background: #161b22; border-color: var(--text-muted); }
+  .box-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+  }
+  .concept-box .box-title { color: var(--accent); }
+  .example-box .box-title { color: var(--accent2); }
+  .warning-box .box-title { color: var(--warn); }
+  .key-box .box-title { color: var(--accent3); }
+  .derivation-box .box-title { color: var(--text-muted); }
+
+  .math-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+
+  code {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.15rem 0.4rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88em;
+    color: var(--accent2);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 0.8rem 0;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.8rem;
+    text-align: center;
+  }
+  th { background: var(--surface); color: var(--accent); font-weight: 600; }
+  td { color: var(--text); }
+  tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
+
+  ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+  li { margin: 0.3rem 0; }
+
+  .figure { text-align: center; margin: 1.5rem 0; }
+  .figure img { max-width: 100%; border-radius: 6px; }
+  .figure-caption {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  .nav-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+  }
+  .nav-footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .nav-footer a:hover { text-decoration: underline; }
+
+  a { color: var(--accent); }
+  .math-block mjx-container { color: var(--text); }
+  .eqref { color: var(--accent); font-variant-numeric: tabular-nums; }
+</style>
+</head><body>
+
+<div class="lesson-header">
+  <div class="series">Kallen Lesson Series</div>
+  <h1>Lesson 1: The K&auml;ll&eacute;n&ndash;Lehmann Equation</h1>
+  <div class="subtitle">Built from first principles &mdash; and why $Z\le1$ is a theorem, not an approximation</div>
+</div>
+
+<p style="color:var(--text-muted)">Equations are numbered throughout. The destination is
+Eq.&nbsp;\eqref{eq:kl}, which appears as Eq.&nbsp;(1) of the contribution.</p>
+
+<h2>1. What a propagator is</h2>
+
+<p>Create a disturbance in a field at spacetime point $y$; ask for the amplitude to find it
+at $x$. That amplitude is the propagator. For a scalar field it is the time-ordered
+two-point function,</p>
+
+<div class="math-block">
+\begin{equation}
+  G(x-y) \;=\; \langle 0|\,T\,\phi(x)\,\phi(y)\,|0\rangle
+  \label{eq:twopoint}
+\end{equation}
+</div>
+
+<p>It depends on $x-y$ alone, not on $x$ and $y$ separately, because the vacuum is
+translation-invariant. That is already a physical statement, and it is what lets us Fourier
+transform to momentum space,</p>
+
+<div class="math-block">
+\begin{equation}
+  G(k) \;=\; \int \mathrm{d}^4x\; e^{\,ikx}\,G(x)
+  \label{eq:fourier}
+\end{equation}
+</div>
+
+<p>where $k$ is a four-momentum and the Lorentz-invariant content sits in $k^2$.</p>
+
+<h2>2. The free field: one pole, residue one</h2>
+
+<p>For a non-interacting field of mass $m$, Eq.&nbsp;\eqref{eq:fourier} evaluates in closed
+form:</p>
+
+<div class="math-block">
+\begin{equation}
+  G_0(k^2) \;=\; \frac{1}{k^2-m^2+i\epsilon}
+  \label{eq:free}
+\end{equation}
+</div>
+
+<div class="concept-box">
+  <div class="box-title">How to read Eq.&nbsp;\eqref{eq:free}</div>
+  <ul>
+    <li>The <strong>pole</strong> at $k^2=m^2$ says: there exists a particle of mass $m$.</li>
+    <li>The <strong>residue</strong>, here exactly $1$, says: the field operator $\phi$
+        creates that particle with full strength and creates nothing else.</li>
+  </ul>
+  <p>Poles are <em>what states exist</em>. Residues are <em>how strongly the field couples
+  to them</em>. Every idea in this lesson is a statement about residues.</p>
+</div>
+
+<h2>3. What breaks when the field interacts</h2>
+
+<p>For a free field, $\phi(0)|0\rangle$ is a one-particle state and nothing more. Switch on
+an interaction and that stops being true: $\phi(0)|0\rangle$ becomes a superposition of
+<em>every</em> state carrying the right quantum numbers &mdash; one particle, two particles,
+bound states, all of it.</p>
+
+<p>The exact $G$ is then not calculable in closed form. K&auml;ll&eacute;n (1952) and
+Lehmann (1954) asked what can be said about it regardless. The answer follows from that one
+observation, made precise.</p>
+
+<h2>4. The derivation</h2>
+
+<div class="concept-box">
+  <div class="box-title">Move 1 &mdash; insert a complete set of states</div>
+  <p>The eigenstates of the Hamiltonian and momentum operators are complete:</p>
+  \begin{equation}
+    \mathbb{1} \;=\; |0\rangle\langle 0| \;+\;
+      \sum_n \int\!\frac{\mathrm{d}^3p}{(2\pi)^3\,2E_p}\,|n,\mathbf{p}\rangle\langle n,\mathbf{p}|
+    \label{eq:completeness}
+  \end{equation}
+  <p>The label $n$ runs over <em>every</em> multi-particle state the theory possesses.
+  <strong>This is the entire physical input.</strong> Everything below is bookkeeping.</p>
+</div>
+
+<div class="concept-box">
+  <div class="box-title">Move 2 &mdash; use translation invariance</div>
+  <p>Because $\phi(x)=e^{iPx}\phi(0)e^{-iPx}$, every matrix element carries its
+  $x$-dependence in a phase:</p>
+  \begin{equation}
+    \langle 0|\phi(x)|n,\mathbf{p}\rangle
+      \;=\; \langle 0|\phi(0)|n,\mathbf{p}\rangle\;e^{-ipx}
+    \label{eq:transl}
+  \end{equation}
+  <p>The unknown dynamics is now confined to the numbers
+  $\langle 0|\phi(0)|n\rangle$ &mdash; which we will never need to evaluate.</p>
+</div>
+
+<div class="concept-box">
+  <div class="box-title">Move 3 &mdash; collect the unknowns into one function</div>
+  <p>Insert Eq.&nbsp;\eqref{eq:completeness} into Eq.&nbsp;\eqref{eq:twopoint} and use
+  Eq.&nbsp;\eqref{eq:transl}. The positive-frequency part becomes</p>
+  \begin{equation}
+    \langle 0|\phi(x)\phi(0)|0\rangle \;=\;
+      \sum_n \int\!\frac{\mathrm{d}^3p}{(2\pi)^3\,2E_p}\,
+      \bigl|\langle 0|\phi(0)|n,\mathbf{p}\rangle\bigr|^2 e^{-ipx}
+    \label{eq:wightman}
+  \end{equation}
+  <p>Lorentz invariance now does the decisive work: the squared matrix element can depend
+  only on the invariant $p^2=m_n^2$, not on $\mathbf{p}$ separately. So define</p>
+  \begin{equation}
+    \rho(\kappa^2) \;=\; \sum_n (2\pi)\,\delta\!\left(\kappa^2-m_n^2\right)
+      \bigl|\langle 0|\phi(0)|n\rangle\bigr|^2
+    \label{eq:rho}
+  \end{equation}
+  <p>Note what comes for free: $\rho \ge 0$ <strong>automatically</strong>, being a sum of
+  squared moduli. Positivity is not an assumption.</p>
+</div>
+
+<div class="concept-box">
+  <div class="box-title">Move 4 &mdash; recognise what each term is</div>
+  <p>With Eq.&nbsp;\eqref{eq:rho}, the sum over $n$ in Eq.&nbsp;\eqref{eq:wightman} becomes
+  an integral over $\kappa^2$, and each slice is precisely the free propagator
+  Eq.&nbsp;\eqref{eq:free} with $m\to\kappa$:</p>
+  \begin{equation}
+    G(k^2) \;=\; \int_0^\infty \mathrm{d}\kappa^2\;
+      \rho(\kappa^2)\;\underbrace{\frac{1}{k^2-\kappa^2+i\epsilon}}_{G_0\ \text{of mass}\ \kappa}
+    \label{eq:assemble}
+  \end{equation}
+</div>
+
+<div class="key-box">
+  <div class="box-title">The K&auml;ll&eacute;n&ndash;Lehmann representation</div>
+  \begin{equation}
+    G(k^2) \;=\; \int_0^\infty \mathrm{d}\kappa^2\;
+      \frac{\rho(\kappa^2)}{k^2-\kappa^2+i\epsilon},
+      \qquad \rho(\kappa^2)\ \ge\ 0
+    \label{eq:kl}
+  \end{equation}
+  <p>The exact propagator of <em>any</em> interacting field is a superposition of free
+  propagators. Non-perturbative, exact at any coupling, and derived from completeness
+  alone. This is Eq.&nbsp;(1) of the contribution.</p>
+</div>
+
+<div class="warning-box">
+  <div class="box-title">Four symbols, easily confused</div>
+  <ul>
+    <li>$G$ &mdash; <strong>the propagator</strong>, the object represented.</li>
+    <li>$k^2$ &mdash; <strong>its argument</strong>: where you choose to evaluate $G$.
+        <em>Not</em> a property of the system.</li>
+    <li>$\kappa^2$ &mdash; <strong>the integration variable</strong>: intermediate-state
+        mass-squared. The poles of $G$ sit at $k^2=\kappa^2$.</li>
+    <li>$\rho$ &mdash; <strong>the spectral density</strong>.</li>
+    <li>$\epsilon$ &mdash; an <strong>infinitesimal</strong>, not a fifth physical
+        quantity. It displaces each pole off the real axis so the integrand stays defined
+        where $k^2=\kappa^2$, and it fixes the causal boundary condition; the residue at a
+        pole is recovered as $\epsilon\to0^+$.</li>
+  </ul>
+  <p>$k^2$ is where you look; $\kappa^2$ is what is there. In &sect;7 this becomes the
+  difference between $E_\mathrm{F}$ and the orbital energies.</p>
+  <p>You will meet that same infinitesimal written $i\eta$ in Eqs.&nbsp;\eqref{eq:lehmann}
+  and \eqref{eq:yoshizawa} below. It is not a different object &mdash; the molecular
+  literature simply needs another letter, because $\varepsilon$ is already taken by the
+  orbital energy. For an isolated molecule nothing broadens the poles, and $E_\mathrm{F}$
+  sits in the gap far from all of them: no pole is approached, so $\eta\to0^+$ is
+  indistinguishable from $\eta=0$, and $G_{rs}$ comes out real. Where a pole <em>is</em>
+  approached &mdash; a molecule wired to leads, for instance &mdash; the infinitesimal is
+  replaced by a finite broadening and the distinction stops being academic.</p>
+</div>
+
+<h2>5. The shape of $\rho$, and why $Z\le1$</h2>
+
+<p>If the theory has a stable particle of mass $m$, that state contributes an isolated delta
+function; everything else contributes above the multi-particle threshold:</p>
+
+<div class="math-block">
+\begin{equation}
+  \rho(\kappa^2) \;=\; Z\,\delta\!\left(\kappa^2-m^2\right)
+    \;+\; \sigma(\kappa^2)\,\theta\!\left(\kappa^2-\kappa^2_{\text{thr}}\right)
+  \label{eq:shape}
+\end{equation}
+</div>
+
+<p>The equal-time canonical commutator
+$[\phi(\mathbf{x},t),\dot\phi(\mathbf{y},t)]=i\delta^3(\mathbf{x}-\mathbf{y})$ fixes the
+total weight:</p>
+
+<div class="math-block">
+\begin{equation}
+  \int_0^\infty \rho(\kappa^2)\,\mathrm{d}\kappa^2 \;=\; 1
+  \label{eq:sumrule}
+\end{equation}
+</div>
+
+<p>Combining Eq.&nbsp;\eqref{eq:shape} with Eq.&nbsp;\eqref{eq:sumrule}:</p>
+
+<div class="math-block">
+\begin{equation}
+  Z \;=\; 1-\int \sigma(\kappa^2)\,\mathrm{d}\kappa^2 \;\le\; 1
+  \label{eq:Z}
+\end{equation}
+</div>
+
+<div class="key-box">
+  <div class="box-title">The constraint, in one sentence</div>
+  <p>The total spectral weight is <strong>fixed</strong>, so whatever the continuum takes,
+  the one-particle pole loses. $Z$ measures how much free-particle character survives the
+  interaction, and $Z=1$ if and only if $\sigma\equiv0$ &mdash; that is, only if the field
+  does not interact.</p>
+</div>
+
+<div class="concept-box">
+  <div class="box-title">$Z$ has a name &mdash; four of them</div>
+  <p>The same quantity is called different things depending on who is speaking, which is
+  worth knowing because the literature does not translate itself:</p>
+  <div class="table-wrapper">
+  <table>
+    <tr><th>field</th><th>name</th><th>symbol</th></tr>
+    <tr><td>quantum field theory</td>
+        <td><strong>field-strength</strong> (or wavefunction)
+            <strong>renormalisation constant</strong></td><td>$Z$</td></tr>
+    <tr><td>many-body / condensed matter</td>
+        <td><strong>quasiparticle weight</strong>, quasiparticle residue</td><td>$Z$</td></tr>
+    <tr><td>quantum chemistry</td><td><strong>pole strength</strong></td><td>$\gamma_n$</td></tr>
+    <tr><td>photoemission, EMS</td><td><strong>spectroscopic factor</strong></td>
+        <td>$S$, $\Gamma$</td></tr>
+  </table>
+  </div>
+  <p>The field-theoretic name is the literal one. In the LSZ reduction, $\sqrt{Z}$ is the
+  factor relating the bare field operator to the asymptotic one-particle state, so $Z<1$
+  says the operator $\phi$ only <em>partly</em> creates a physical particle &mdash; the
+  rest of its action lands in the continuum. In Fermi-liquid theory the same $Z$ is the
+  size of the discontinuity in the momentum distribution at $k_\mathrm{F}$, and it
+  controls the effective-mass enhancement.</p>
+  <p>So when a photoemission paper quotes a spectroscopic factor of $0.6$, it is quoting
+  the molecular $Z$ &mdash; and asserting that $40\%$ of that ionisation's intensity is
+  somewhere else.</p>
+</div>
+
+<p>The analytic structure follows at once: an isolated pole at $k^2=m^2$ with residue
+$Z<1$, plus a branch cut from $\kappa^2_{\text{thr}}$ to infinity. Poles are one-particle
+states; the cut is everything else.</p>
+
+<h2>6. The molecular version</h2>
+
+<p>Only Move 3 used relativity. Drop it, insert a complete set of $(N\!\pm\!1)$-electron
+eigenstates between field operators, and the same construction gives the one-particle
+Green's function of a molecule &mdash; Lehmann's representation:</p>
+
+<div class="math-block">
+\begin{equation}
+  G_{rs}(E)\;=\;\sum_a
+    \frac{\langle\Psi^N_0|a_r|\Psi^{N+1}_a\rangle\langle\Psi^{N+1}_a|a^\dagger_s|\Psi^N_0\rangle}
+         {E-(E^{N+1}_a-E^N_0)+i\eta}
+  \;+\;\sum_n
+    \frac{\langle\Psi^N_0|a^\dagger_s|\Psi^{N-1}_n\rangle\langle\Psi^{N-1}_n|a_r|\Psi^N_0\rangle}
+         {E+(E^{N-1}_n-E^N_0)-i\eta}
+  \label{eq:lehmann}
+\end{equation}
+</div>
+
+<p>The first sum is the <strong>addition</strong> half (electron affinities), the second the
+<strong>removal</strong> half (ionisations). The continuous density has collapsed into two
+discrete sums, because a finite system has a discrete spectrum.</p>
+
+<div class="table-wrapper">
+<table>
+  <tr><th>Field theory</th><th>Molecule</th></tr>
+  <tr><td>$k^2$ &mdash; the argument</td><td>$E$, evaluated at $E_\mathrm{F}$</td></tr>
+  <tr><td>$\kappa^2$ &mdash; intermediate-state mass</td><td>$\mathrm{IP}_n$, $\mathrm{EA}_a$ &mdash; the poles</td></tr>
+  <tr><td>$\rho(\kappa^2)$</td><td>residues $d^{\,n}_r d^{\,n}_s$ at each pole</td></tr>
+  <tr><td>$Z$</td><td>$\gamma_n=\lVert d^{\,n}\rVert^2$ &mdash; the pole strength</td></tr>
+  <tr><td>multi-particle continuum</td><td>shake-up satellites</td></tr>
+  <tr><td>Eq.&nbsp;\eqref{eq:sumrule}</td><td>$\sum_n\gamma_n$ over both halves $=1$ per orbital</td></tr>
+</table>
+</div>
+
+<div class="concept-box">
+  <div class="box-title">Where the Dyson orbital comes from</div>
+  <p>The numerator of the removal half factorises. Define</p>
+  \begin{equation}
+    d^{\,n}(\mathbf{x}) \;=\; \sqrt{N}\!\int\!
+      \Psi^{N-1\,*}_n\,\Psi^{N}_0\;\mathrm{d}\mathbf{x}_2\cdots\mathrm{d}\mathbf{x}_N
+    \label{eq:dyson}
+  \end{equation}
+  <p>and the residue at pole $n$ is simply $d^{\,n}_r d^{\,n}_s$. So the <strong>Dyson
+  orbital is the residue of the K&auml;ll&eacute;n&ndash;Lehmann propagator at an ionisation
+  pole</strong> &mdash; not a one-electron orbital, but an overlap between two
+  many-electron wavefunctions differing by one electron. Its squared norm is the molecular
+  $Z$.</p>
+</div>
+
+<p>An electron-transfer coupling uses the <strong>removal half of
+Eq.&nbsp;\eqref{eq:lehmann} alone</strong>: the bridge mediates hole-like superexchange.
+That is a deliberate truncation of the representation, and worth stating as one.</p>
+
+<h2>7. What an orbital Green's function asserts</h2>
+
+<p>The expression actually evaluated in molecular-conduction work replaces the ionised
+states by orbitals:</p>
+
+<div class="math-block">
+\begin{equation}
+  G_{rs}(E_\mathrm{F}) \;=\; \sum_k \frac{C_{rk}\,C_{sk}}{E_\mathrm{F}-\varepsilon_k+i\eta}
+  \label{eq:yoshizawa}
+\end{equation}
+</div>
+
+<div class="warning-box">
+  <div class="box-title">This is Eq.&nbsp;\eqref{eq:kl} with the continuum deleted</div>
+  <p>$C_{rk}$ are coefficients of a <strong>normalised</strong> orbital, so every pole
+  enters with residue $1$. And there are exactly as many poles as orbitals. In the language
+  of Eq.&nbsp;\eqref{eq:shape}, Eq.&nbsp;\eqref{eq:yoshizawa} asserts</p>
+  \begin{equation}
+    \rho(\kappa^2) \;=\; \sum_k \delta\!\left(\kappa^2-\varepsilon_k\right),
+    \qquad Z_k \equiv 1, \qquad \sigma \equiv 0
+    \label{eq:koopmans}
+  \end{equation}
+  <p>&mdash; which Eq.&nbsp;\eqref{eq:Z} says is the non-interacting case. This is the
+  Koopmans limit: exact when one determinant describes the ionised state, and wrong in a
+  definite, diagnosable way when correlation redistributes intensity.</p>
+</div>
+
+<div class="example-box">
+  <div class="box-title">What the failure looks like</div>
+  <p>Thiophene's $2b_1$ ($\pi_1$) ionisation near $12.5$ eV comes out at $\gamma=0.589$: it
+  has given away $40\%$ of its weight. That weight is not lost &mdash; it reappears as two
+  shake-up satellites at $\gamma=0.094$ and $0.131$. Those satellites <em>are</em>
+  $\sigma(\kappa^2)$ of Eq.&nbsp;\eqref{eq:shape}, discretised. Eq.&nbsp;\eqref{eq:yoshizawa}
+  has no poles at which to put them.</p>
+</div>
+
+<h2>8. Two things to carry away</h2>
+
+<div class="key-box">
+  <div class="box-title">$Z\le1$ is a theorem, not an approximation</div>
+  <p>Eq.&nbsp;\eqref{eq:Z} follows from completeness and canonical commutation. Any
+  interacting propagator spreads weight out of its pole. A method that assigns unit weight
+  to every pole is not being slightly imprecise &mdash; it is asserting the system does not
+  interact. Computing $\gamma_n$ turns that assumption into a result.</p>
+</div>
+
+<div class="key-box">
+  <div class="box-title">$k^2$ is not $\kappa^2$</div>
+  <p>The propagator is a <em>function of an argument</em>, distinct in character from the
+  poles it possesses. In the molecular case: the poles are properties of the system,
+  $E_\mathrm{F}$ is not &mdash; it is an input. A code that derives $E_\mathrm{F}$ from its
+  own pole list has confused the two.</p>
+</div>
+
+<div class="nav-footer">
+  <a href="../README.md">&larr; Kallen</a>
+  <span>Lesson 1</span>
+</div>
+
+</body>
+</html>
